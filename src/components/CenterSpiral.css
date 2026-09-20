@@ -1,5 +1,5 @@
 /* ============================================================
-   CENTER SPIRAL — axis pole of the domain drum carousel
+   CENTER SPIRAL — 3D Volumetric Axis Pole
    ============================================================ */
 
 .center-spiral {
@@ -10,11 +10,11 @@
   transform: translate3d(-50%, 0, 0);
   transform-style: preserve-3d;
 
-  /* Width for the central axis pole */
-  width: 100px;
+  width: 120px;
   height: 100%;
 
   pointer-events: none;
+  background: transparent;
 }
 
 .center-spiral-canvas {
@@ -23,7 +23,6 @@
   height: 100%;
 }
 
-/* On mobile the drum collapses — hide spiral too */
 @media (max-width: 640px) {
   .center-spiral {
     display: none;

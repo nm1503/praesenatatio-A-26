@@ -6,23 +6,14 @@ import './CenterSpiral.css';
 gsap.registerPlugin(ScrollTrigger);
 
 // ============================================================
-// CENTER SPIRAL
-// A canvas-based 3D helix that sits at the CENTER of the
-// domain drum carousel — acting as the visual axis pole
-// that the three cards (Dramatics, Literature, Oration) orbit.
-//
-// Same helix math as SpiralScroll but:
-//   - position: absolute, centered in its parent
-//   - narrower strip (fits between cards)
-//   - slightly larger radius to fill its container width
-//   - scroll-driven rotation via GSAP ScrollTrigger
-//   - trigger: the parent section, not the full document
+// CENTER SPIRAL — True 3D Volumetric Metallic Helix Axis
 // ============================================================
 
-const NUM_LOOPS   = 18;
-const POINTS_PER  = 100;
-const TOTAL_ROT   = Math.PI * 10;
-const INERTIA     = 0.07;
+const NUM_LOOPS   = 16;
+const POINTS_PER  = 120;
+const TOTAL_ROT   = Math.PI * 12;
+const INERTIA     = 0.08;
+const PERSPECTIVE = 350; // Perspective distance for 3D depth scaling
 
 interface CenterSpiralProps {
   /** The section element to use as the ScrollTrigger trigger */
@@ -63,85 +54,130 @@ export default function CenterSpiral({ sectionRef }: CenterSpiralProps) {
     window.addEventListener('resize', resize);
 
     function draw(rotOffset: number) {
-      const W  = wrap!.offsetWidth;
-      const H  = wrap!.offsetHeight;
+      const W = wrap!.offsetWidth;
+      const H = wrap!.offsetHeight;
       ctx!.clearRect(0, 0, W, H);
 
       const cx        = W / 2;
-      const radius    = W * 0.36;  // swing 36% each side of center
-      const padTop    = 32;
-      const padBottom = 32;
+      const radius3D  = Math.min(W * 0.42, 55);
+      const padTop    = 24;
+      const padBottom = 24;
       const drawH     = H - padTop - padBottom;
       const totalPts  = NUM_LOOPS * POINTS_PER;
 
-      // Faint center axis
-      ctx!.beginPath();
-      ctx!.moveTo(cx, padTop);
-      ctx!.lineTo(cx, H - padBottom);
-      ctx!.strokeStyle = 'rgba(201, 168, 76, 0.10)';
-      ctx!.lineWidth   = 1;
-      ctx!.stroke();
+      interface Segment {
+        x0: number; y0: number;
+        x1: number; y1: number;
+        z: number;
+        alpha: number;
+        lw: number;
+        isFront: boolean;
+      }
 
-      // Wire segments
+      const segments: Segment[] = [];
+
       for (let i = 0; i < totalPts - 1; i++) {
         const t0 = (i       / totalPts) * NUM_LOOPS * Math.PI * 2;
         const t1 = ((i + 1) / totalPts) * NUM_LOOPS * Math.PI * 2;
 
-        const x0 = cx + Math.sin(t0 + rotOffset) * radius;
-        const y0 = padTop + (i       / totalPts) * drawH;
-        const x1 = cx + Math.sin(t1 + rotOffset) * radius;
+        const ang0 = t0 + rotOffset;
+        const ang1 = t1 + rotOffset;
+
+        // 3D coordinates (Z is depth into/out of screen)
+        const wx0 = Math.sin(ang0) * radius3D;
+        const wz0 = Math.cos(ang0) * radius3D;
+
+        const wx1 = Math.sin(ang1) * radius3D;
+        const wz1 = Math.cos(ang1) * radius3D;
+
+        // 3D Perspective Scaling
+        const scale0 = PERSPECTIVE / (PERSPECTIVE - wz0);
+        const scale1 = PERSPECTIVE / (PERSPECTIVE - wz1);
+
+        const x0 = cx + wx0 * scale0;
+        const y0 = padTop + (i / totalPts) * drawH;
+
+        const x1 = cx + wx1 * scale1;
         const y1 = padTop + ((i + 1) / totalPts) * drawH;
 
-        const depth = Math.cos(t0 + rotOffset);
-        const t     = (depth + 1) / 2;
-        const alpha = 0.12 + t * 0.88;
-        const lw    = 0.8  + t * 2.2;
+        const depthNorm = (wz0 / radius3D + 1) / 2; // 0 (back) to 1 (front)
+        const alpha     = 0.15 + depthNorm * 0.85;
+        const lw        = (0.7 + depthNorm * 2.6) * scale0;
 
-        ctx!.beginPath();
-        ctx!.moveTo(x0, y0);
-        ctx!.lineTo(x1, y1);
-        ctx!.strokeStyle = `rgba(201, 168, 76, ${alpha.toFixed(3)})`;
-        ctx!.lineWidth   = lw;
-        ctx!.lineCap     = 'round';
-        ctx!.stroke();
+        segments.push({
+          x0, y0, x1, y1,
+          z: wz0,
+          alpha,
+          lw,
+          isFront: wz0 >= 0,
+        });
       }
 
-      // Loop-end caps
-      for (let loop = 0; loop <= NUM_LOOPS; loop++) {
-        const t     = (loop / NUM_LOOPS) * NUM_LOOPS * Math.PI * 2;
-        const x     = cx + Math.sin(t + rotOffset) * radius;
-        const y     = padTop + (loop / NUM_LOOPS) * drawH;
-        const depth = Math.cos(t + rotOffset);
-        const norm  = (depth + 1) / 2;
-        const alpha = 0.15 + norm * 0.85;
-        const capR  = 2 + norm * 2;
-
-        ctx!.beginPath();
-        ctx!.arc(x, y, capR, 0, Math.PI * 2);
-        ctx!.fillStyle = `rgba(201, 168, 76, ${alpha.toFixed(3)})`;
-        ctx!.fill();
-
-        if (depth > 0.2) {
+      // Pass 1: Render Back Segments (receding into 3D background)
+      for (const seg of segments) {
+        if (!seg.isFront) {
           ctx!.beginPath();
-          ctx!.arc(x - 0.6, y - 0.6, capR * 0.4, 0, Math.PI * 2);
-          ctx!.fillStyle = `rgba(255, 240, 180, ${(norm * 0.5).toFixed(3)})`;
-          ctx!.fill();
+          ctx!.moveTo(seg.x0, seg.y0);
+          ctx!.lineTo(seg.x1, seg.y1);
+          ctx!.strokeStyle = `rgba(180, 140, 50, ${seg.alpha.toFixed(3)})`;
+          ctx!.lineWidth   = seg.lw;
+          ctx!.lineCap     = 'round';
+          ctx!.stroke();
         }
       }
 
-      // Top/bottom fade
-      const fade = 60;
-      const gt = ctx!.createLinearGradient(0, 0, 0, fade);
-      gt.addColorStop(0, 'rgba(8,8,8,1)');
-      gt.addColorStop(1, 'rgba(8,8,8,0)');
-      ctx!.fillStyle = gt;
-      ctx!.fillRect(0, 0, W, fade);
+      // Pass 2: Render Central 3D Metallic Axis Rod
+      ctx!.beginPath();
+      ctx!.moveTo(cx, padTop);
+      ctx!.lineTo(cx, H - padBottom);
+      ctx!.strokeStyle = 'rgba(212, 175, 55, 0.22)';
+      ctx!.lineWidth   = 1.5;
+      ctx!.stroke();
 
-      const gb = ctx!.createLinearGradient(0, H - fade, 0, H);
-      gb.addColorStop(0, 'rgba(8,8,8,0)');
-      gb.addColorStop(1, 'rgba(8,8,8,1)');
-      ctx!.fillStyle = gb;
-      ctx!.fillRect(0, H - fade, W, fade);
+      // Pass 3: Render Front Segments (warm glowing gold coming toward camera)
+      for (const seg of segments) {
+        if (seg.isFront) {
+          ctx!.beginPath();
+          ctx!.moveTo(seg.x0, seg.y0);
+          ctx!.lineTo(seg.x1, seg.y1);
+          ctx!.strokeStyle = `rgba(255, 215, 0, ${seg.alpha.toFixed(3)})`;
+          ctx!.lineWidth   = seg.lw;
+          ctx!.lineCap     = 'round';
+          ctx!.stroke();
+        }
+      }
+
+      // Pass 4: Render 3D Metallic Spherical Nodes at turnpoints
+      for (let loop = 0; loop <= NUM_LOOPS; loop++) {
+        const t     = (loop / NUM_LOOPS) * NUM_LOOPS * Math.PI * 2;
+        const ang   = t + rotOffset;
+        const wz    = Math.cos(ang) * radius3D;
+        const wx    = Math.sin(ang) * radius3D;
+        const scale = PERSPECTIVE / (PERSPECTIVE - wz);
+
+        const x     = cx + wx * scale;
+        const y     = padTop + (loop / NUM_LOOPS) * drawH;
+        const norm  = (wz / radius3D + 1) / 2;
+
+        if (wz > -radius3D * 0.4) {
+          const capR  = (2 + norm * 2.5) * scale;
+          const alpha = 0.2 + norm * 0.8;
+
+          // Outer Gold Sphere Body
+          ctx!.beginPath();
+          ctx!.arc(x, y, capR, 0, Math.PI * 2);
+          ctx!.fillStyle = `rgba(255, 215, 0, ${alpha.toFixed(3)})`;
+          ctx!.fill();
+
+          // Shiny 3D Specular Highlight on front nodes
+          if (wz > 0) {
+            ctx!.beginPath();
+            ctx!.arc(x - capR * 0.25, y - capR * 0.25, capR * 0.45, 0, Math.PI * 2);
+            ctx!.fillStyle = `rgba(255, 255, 230, ${(norm * 0.8).toFixed(3)})`;
+            ctx!.fill();
+          }
+        }
+      }
     }
 
     // ScrollTrigger on the parent section
