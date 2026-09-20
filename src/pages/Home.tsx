@@ -157,6 +157,27 @@ export default function Home() {
       try {
         stage.releasePointerCapture(e.pointerId);
       } catch (_) {}
+
+      // If user clicked (without dragging), detect card under cursor and rotate to front
+      if (!hasDraggedRef.current) {
+        const hitEl = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
+        const panel = hitEl?.closest('.core-area-panel') as HTMLElement | null;
+        if (panel) {
+          const domainId = panel.getAttribute('data-domain');
+          const cardIdx = coreAreas.findIndex((a) => a.id === domainId);
+          if (cardIdx !== -1) {
+            const currentRotateY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
+            const targetBase = -cardIdx * 120;
+            let diff = (targetBase - currentRotateY) % 360;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+            const targetAngle = currentRotateY + diff;
+
+            dragOffset = targetAngle - baseRotation;
+            updateRotation();
+          }
+        }
+      }
     };
 
     stage.addEventListener('wheel', onWheel, { passive: false });
