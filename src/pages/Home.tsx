@@ -83,16 +83,18 @@ export default function Home() {
     const updateRotation = (duration = isDragging ? 0.1 : 0.4) => {
       const targetRotateY = baseRotation + dragOffset;
 
-      const updateSpiralOpacity = () => {
+      const updateSpiralVisibility = () => {
         const currentY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
-        const R = Math.abs((currentY % 120 + 120) % 120);
+        const R = Math.abs(((currentY % 120) + 120) % 120);
         const angleFromCard = R > 60 ? 120 - R : R;
-        // angleFromCard = 0° when card is front, 60° when gap is front
-        const opacity = Math.min(1, Math.max(0, (angleFromCard - 12) / 28));
+        // angleFromCard = 0° when card is dead front, 60° when gap is dead front.
+        // Card body covers center column when angleFromCard <= 28°.
+        const isCardInFront = angleFromCard <= 28;
 
         const spiral = stage.querySelector('.center-spiral') as HTMLElement | null;
         if (spiral) {
-          spiral.style.opacity = opacity.toFixed(3);
+          spiral.style.opacity = isCardInFront ? '0' : '1';
+          spiral.style.visibility = isCardInFront ? 'hidden' : 'visible';
         }
       };
 
@@ -101,10 +103,10 @@ export default function Home() {
         duration,
         ease: 'power2.out',
         overwrite: 'auto',
-        onUpdate: updateSpiralOpacity,
+        onUpdate: updateSpiralVisibility,
       });
 
-      updateSpiralOpacity();
+      updateSpiralVisibility();
     };
 
     // Smoothly rotate clicked card index to the front
