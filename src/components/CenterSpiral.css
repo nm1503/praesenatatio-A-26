@@ -13,8 +13,12 @@
   width: 80px;
   height: 100%;
 
-  /* Must be ABOVE the drum's 3D panels so it's always visible */
-  z-index: 20;
+  /* Sit BEHIND the 3D drum panels — z-index 0 keeps it below
+     front-facing cards while still visible through the gap */
+  z-index: 0;
+
+  /* Clip strictly to the column so it never bleeds onto cards */
+  overflow: hidden;
 
   pointer-events: none;
 }
