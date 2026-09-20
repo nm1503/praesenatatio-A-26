@@ -81,12 +81,30 @@ export default function Home() {
     let activePointerId: number | null = null;
 
     const updateRotation = (duration = isDragging ? 0.1 : 0.4) => {
+      const targetRotateY = baseRotation + dragOffset;
+
+      const updateSpiralOpacity = () => {
+        const currentY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
+        const R = Math.abs((currentY % 120 + 120) % 120);
+        const angleFromCard = R > 60 ? 120 - R : R;
+        // angleFromCard = 0° when card is front, 60° when gap is front
+        const opacity = Math.min(1, Math.max(0, (angleFromCard - 12) / 28));
+
+        const spiral = stage.querySelector('.center-spiral') as HTMLElement | null;
+        if (spiral) {
+          spiral.style.opacity = opacity.toFixed(3);
+        }
+      };
+
       gsap.to(drum, {
-        rotateY: baseRotation + dragOffset,
+        rotateY: targetRotateY,
         duration,
         ease: 'power2.out',
         overwrite: 'auto',
+        onUpdate: updateSpiralOpacity,
       });
+
+      updateSpiralOpacity();
     };
 
     // Smoothly rotate clicked card index to the front
