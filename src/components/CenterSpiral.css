@@ -1,20 +1,22 @@
 /* ============================================================
-   CENTER SPIRAL — 3D Volumetric Axis Pole
+   CENTER SPIRAL — axis pole of the domain drum carousel
    ============================================================ */
 
 .center-spiral {
-  /* Sit at the exact 3D center (Z = 0) inside .core-areas-drum */
+  /* Sit at the exact center of .core-areas-stage */
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translate3d(-50%, 0, 0);
-  transform-style: preserve-3d;
+  transform: translateX(-50%);
 
-  width: 120px;
+  /* Narrow enough to sit between the cards, tall as the stage */
+  width: 80px;
   height: 100%;
 
+  /* Must be ABOVE the drum's 3D panels so it's always visible */
+  z-index: 20;
+
   pointer-events: none;
-  background: transparent;
 }
 
 .center-spiral-canvas {
@@ -23,6 +25,7 @@
   height: 100%;
 }
 
+/* On mobile the drum collapses — hide spiral too */
 @media (max-width: 640px) {
   .center-spiral {
     display: none;
