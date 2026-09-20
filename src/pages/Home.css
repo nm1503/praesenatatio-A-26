@@ -303,7 +303,7 @@
   padding: 48px 36px;
   overflow: hidden;
   background: var(--bg-secondary);
-  cursor: default;
+  cursor: pointer;
 
   /* Smooth transition for hover color */
   transition: background 0.4s var(--ease-smooth);

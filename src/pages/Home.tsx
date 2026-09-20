@@ -58,6 +58,31 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
+  // Ref to track if user dragged, so clicks aren't triggered during drags
+  const hasDraggedRef = useRef(false);
+
+  // Rotate drum smoothly so clicked card index faces front
+  const rotateToCard = (cardIndex: number) => {
+    const drum = drumRef.current;
+    if (!drum) return;
+
+    const currentRotateY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
+    const targetBase = -cardIndex * 120;
+
+    let diff = (targetBase - currentRotateY) % 360;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+
+    const targetAngle = currentRotateY + diff;
+
+    gsap.to(drum, {
+      rotateY: targetAngle,
+      duration: 0.8,
+      ease: 'power2.out',
+      overwrite: 'auto',
+    });
+  };
+
   // 3D drum rotation driven by vertical scroll + horizontal drag & horizontal wheel
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
@@ -106,6 +131,7 @@ export default function Home() {
     // 3. Pointer drag & touch swipe (mouse + touch)
     const onPointerDown = (e: PointerEvent) => {
       isDragging = true;
+      hasDraggedRef.current = false;
       startX = e.clientX;
       dragStartOffset = dragOffset;
       stage.style.cursor = 'grabbing';
@@ -117,6 +143,9 @@ export default function Home() {
     const onPointerMove = (e: PointerEvent) => {
       if (!isDragging) return;
       const dx = e.clientX - startX;
+      if (Math.abs(dx) > 5) {
+        hasDraggedRef.current = true;
+      }
       dragOffset = dragStartOffset + dx * 0.6;
       updateRotation();
     };
@@ -278,6 +307,11 @@ export default function Home() {
                 key={area.id}
                 className="core-area-panel"
                 data-domain={area.id}
+                onClick={() => {
+                  if (!hasDraggedRef.current) {
+                    rotateToCard(idx);
+                  }
+                }}
                 style={{
                   '--domain-color': area.color,
                   transform: `rotateY(${idx * 120}deg) translateZ(var(--drum-radius))`,
