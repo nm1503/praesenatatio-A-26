@@ -58,30 +58,10 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
-  // Ref to track if user dragged, so clicks aren't triggered during drags
+  // Ref to track drum card rotation function
+  const rotateToCardRef = useRef<((idx: number) => void) | null>(null);
+  // Ref to track if user dragged
   const hasDraggedRef = useRef(false);
-
-  // Rotate drum smoothly so clicked card index faces front
-  const rotateToCard = (cardIndex: number) => {
-    const drum = drumRef.current;
-    if (!drum) return;
-
-    const currentRotateY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
-    const targetBase = -cardIndex * 120;
-
-    let diff = (targetBase - currentRotateY) % 360;
-    if (diff > 180) diff -= 360;
-    if (diff < -180) diff += 360;
-
-    const targetAngle = currentRotateY + diff;
-
-    gsap.to(drum, {
-      rotateY: targetAngle,
-      duration: 0.8,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    });
-  };
 
   // 3D drum rotation driven by vertical scroll + horizontal drag & horizontal wheel
   useEffect(() => {
@@ -98,15 +78,31 @@ export default function Home() {
     let isDragging = false;
     let startX = 0;
     let dragStartOffset = 0;
+    let activePointerId: number | null = null;
 
-    const updateRotation = () => {
+    const updateRotation = (duration = isDragging ? 0.1 : 0.4) => {
       gsap.to(drum, {
         rotateY: baseRotation + dragOffset,
-        duration: isDragging ? 0.1 : 0.4,
+        duration,
         ease: 'power2.out',
         overwrite: 'auto',
       });
     };
+
+    // Smoothly rotate clicked card index to the front
+    const handleCardClick = (cardIdx: number) => {
+      const currentRotateY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
+      const targetBase = -cardIdx * 120;
+      let diff = (targetBase - currentRotateY) % 360;
+      if (diff > 180) diff -= 360;
+      if (diff < -180) diff += 360;
+      const targetAngle = currentRotateY + diff;
+
+      dragOffset = targetAngle - baseRotation;
+      updateRotation(0.8);
+    };
+
+    rotateToCardRef.current = handleCardClick;
 
     // 1. Vertical scroll drives rotation
     const st = ScrollTrigger.create({
@@ -134,10 +130,7 @@ export default function Home() {
       hasDraggedRef.current = false;
       startX = e.clientX;
       dragStartOffset = dragOffset;
-      stage.style.cursor = 'grabbing';
-      try {
-        stage.setPointerCapture(e.pointerId);
-      } catch (_) {}
+      activePointerId = e.pointerId;
     };
 
     const onPointerMove = (e: PointerEvent) => {
@@ -145,36 +138,46 @@ export default function Home() {
       const dx = e.clientX - startX;
       if (Math.abs(dx) > 5) {
         hasDraggedRef.current = true;
+        if (stage && activePointerId !== null) {
+          try {
+            stage.setPointerCapture(activePointerId);
+          } catch (_) {}
+        }
+        stage.style.cursor = 'grabbing';
       }
-      dragOffset = dragStartOffset + dx * 0.6;
-      updateRotation();
+      if (hasDraggedRef.current) {
+        dragOffset = dragStartOffset + dx * 0.6;
+        updateRotation();
+      }
     };
 
     const onPointerUp = (e: PointerEvent) => {
       if (!isDragging) return;
       isDragging = false;
       stage.style.cursor = 'grab';
-      try {
-        stage.releasePointerCapture(e.pointerId);
-      } catch (_) {}
+      if (activePointerId !== null) {
+        try {
+          stage.releasePointerCapture(activePointerId);
+        } catch (_) {}
+        activePointerId = null;
+      }
 
-      // If user clicked (without dragging), detect card under cursor and rotate to front
+      // If user clicked (without dragging), search all DOM layers under cursor
       if (!hasDraggedRef.current) {
-        const hitEl = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
-        const panel = hitEl?.closest('.core-area-panel') as HTMLElement | null;
-        if (panel) {
-          const domainId = panel.getAttribute('data-domain');
-          const cardIdx = coreAreas.findIndex((a) => a.id === domainId);
-          if (cardIdx !== -1) {
-            const currentRotateY = (gsap.getProperty(drum, 'rotateY') as number) || 0;
-            const targetBase = -cardIdx * 120;
-            let diff = (targetBase - currentRotateY) % 360;
-            if (diff > 180) diff -= 360;
-            if (diff < -180) diff += 360;
-            const targetAngle = currentRotateY + diff;
+        const hitElements = document.elementsFromPoint
+          ? document.elementsFromPoint(e.clientX, e.clientY)
+          : [document.elementFromPoint(e.clientX, e.clientY)];
 
-            dragOffset = targetAngle - baseRotation;
-            updateRotation();
+        for (const el of hitElements) {
+          if (!el) continue;
+          const panel = el.closest('.core-area-panel') as HTMLElement | null;
+          if (panel) {
+            const domainId = panel.getAttribute('data-domain');
+            const cardIdx = coreAreas.findIndex((a) => a.id === domainId);
+            if (cardIdx !== -1) {
+              handleCardClick(cardIdx);
+              break;
+            }
           }
         }
       }
@@ -329,8 +332,8 @@ export default function Home() {
                 className="core-area-panel"
                 data-domain={area.id}
                 onClick={() => {
-                  if (!hasDraggedRef.current) {
-                    rotateToCard(idx);
+                  if (!hasDraggedRef.current && rotateToCardRef.current) {
+                    rotateToCardRef.current(idx);
                   }
                 }}
                 style={{
