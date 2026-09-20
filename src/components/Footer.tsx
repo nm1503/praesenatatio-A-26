@@ -3,9 +3,9 @@ import './Footer.css';
 
 const NAV_LINKS = [
   { to: '/', label: 'Home' },
-  { to: '/domains', label: 'Domains' },
+  { to: '/domains', label: 'Domain Events' },
   { to: '/flagships', label: 'Flagships' },
-  { to: '/domain-activity', label: 'Domain Activity' },
+  { to: '/domain-activity', label: 'Domain Activities' },
   { to: '/gallery', label: 'Gallery' },
 ];
 

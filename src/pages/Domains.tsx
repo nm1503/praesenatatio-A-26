@@ -22,7 +22,7 @@ export default function Domains() {
             className="text-hero font-hero reveal"
             style={{ animationDelay: '0.1s' }}
           >
-            DOMAINS
+            DOMAIN EVENTS
           </h1>
           <p className="text-subtitle font-display reveal" style={{ color: 'var(--text-secondary)', maxWidth: 600, marginTop: 24 }}>
             Praesentatio enables expression through three distinct — and deliberately different — forms.

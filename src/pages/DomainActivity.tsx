@@ -77,7 +77,7 @@ export default function DomainActivity() {
             id="activity-page-heading"
             className="text-hero font-hero reveal"
           >
-            DOMAIN EVENTS
+            DOMAIN ACTIVITIES
           </h1>
           <p className="text-subtitle font-display reveal" style={{ color: 'var(--text-secondary)', maxWidth: 640, marginTop: 24 }}>
             Beyond its flagship events, Praesentatio creates domain activities that

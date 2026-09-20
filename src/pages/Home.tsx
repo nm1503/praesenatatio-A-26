@@ -258,7 +258,7 @@ export default function Home() {
 
             <div className="hero-actions">
               <Link to="/domains" className="btn btn-solid">
-                Explore Domains <ArrowRight size={16} />
+                Explore Domain Events <ArrowRight size={16} />
               </Link>
               <Link to="/flagships" className="btn btn-outline">
                 Our Flagships
@@ -377,7 +377,7 @@ export default function Home() {
 
         <div className="container" style={{ marginTop: 48 }}>
           <Link to="/domains" className="btn btn-outline reveal">
-            Explore All Domains <ArrowRight size={16} />
+            Explore All Domain Events <ArrowRight size={16} />
           </Link>
         </div>
       </section>
