@@ -88,13 +88,13 @@ export default function Home() {
         const R = Math.abs(((currentY % 120) + 120) % 120);
         const angleFromCard = R > 60 ? 120 - R : R;
         // angleFromCard = 0° when card is dead front, 60° when gap is dead front.
-        // Card body covers center column when angleFromCard <= 28°.
-        const isCardInFront = angleFromCard <= 28;
+        // Slowly reveal helix as card moves away (opacity 0 at 8° up to 1 at 36°)
+        const opacity = Math.min(1, Math.max(0, (angleFromCard - 8) / 28));
 
         const spiral = stage.querySelector('.center-spiral') as HTMLElement | null;
         if (spiral) {
-          spiral.style.opacity = isCardInFront ? '0' : '1';
-          spiral.style.visibility = isCardInFront ? 'hidden' : 'visible';
+          spiral.style.opacity = opacity.toFixed(3);
+          spiral.style.visibility = opacity <= 0.01 ? 'hidden' : 'visible';
         }
       };
 
@@ -372,7 +372,7 @@ export default function Home() {
           </div>
 
           {/* Center spiral — the axis pole the panels revolve around */}
-          <CenterSpiral sectionRef={coreRef} />
+          <CenterSpiral sectionRef={coreRef} drumRef={drumRef} />
         </div>
 
         <div className="container" style={{ marginTop: 48 }}>

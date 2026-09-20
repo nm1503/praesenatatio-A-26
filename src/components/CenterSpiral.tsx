@@ -27,9 +27,11 @@ const INERTIA     = 0.07;
 interface CenterSpiralProps {
   /** The section element to use as the ScrollTrigger trigger */
   sectionRef: React.RefObject<HTMLElement | null>;
+  /** The 3D drum ref to sync horizontal rotation with */
+  drumRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function CenterSpiral({ sectionRef }: CenterSpiralProps) {
+export default function CenterSpiral({ sectionRef, drumRef }: CenterSpiralProps) {
   const canvasRef  = useRef<HTMLCanvasElement>(null);
   const wrapRef    = useRef<HTMLDivElement>(null);
   const targetRot  = useRef(0);
@@ -155,7 +157,13 @@ export default function CenterSpiral({ sectionRef }: CenterSpiralProps) {
     });
 
     function animate() {
-      currentRot.current += (targetRot.current - currentRot.current) * INERTIA;
+      let drumRad = 0;
+      if (drumRef?.current) {
+        const drumY = (gsap.getProperty(drumRef.current, 'rotateY') as number) || 0;
+        drumRad = (-drumY * Math.PI) / 180;
+      }
+      const desiredRot = targetRot.current + drumRad;
+      currentRot.current += (desiredRot - currentRot.current) * INERTIA;
       draw(currentRot.current);
       rafRef.current = requestAnimationFrame(animate);
     }
