@@ -270,6 +270,10 @@
   perspective-origin: center center;
   position: relative;
   margin-top: 40px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
 }
 
 /* The drum — GSAP rotates this element around Y */

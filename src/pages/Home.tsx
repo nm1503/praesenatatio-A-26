@@ -58,28 +58,91 @@ export default function Home() {
     return () => window.removeEventListener('mousemove', onMove);
   }, []);
 
-  // 3D drum rotation driven by scroll
+  // 3D drum rotation driven by vertical scroll + horizontal drag & horizontal wheel
   useEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const drum = drumRef.current;
     const section = coreRef.current;
     if (!drum || !section) return;
 
-    // Rotate the drum from 0° → -360° as the section scrolls through the viewport
-    const tween = gsap.to(drum, {
-      rotateY: -360,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        scrub: 1.5,
+    const stage = drum.parentElement;
+    if (!stage) return;
+
+    let baseRotation = 0;
+    let dragOffset = 0;
+    let isDragging = false;
+    let startX = 0;
+    let dragStartOffset = 0;
+
+    const updateRotation = () => {
+      gsap.to(drum, {
+        rotateY: baseRotation + dragOffset,
+        duration: isDragging ? 0.1 : 0.4,
+        ease: 'power2.out',
+        overwrite: 'auto',
+      });
+    };
+
+    // 1. Vertical scroll drives rotation
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top 80%',
+      end: 'bottom 20%',
+      onUpdate: (self) => {
+        baseRotation = -self.progress * 360;
+        updateRotation();
       },
     });
 
+    // 2. Horizontal wheel scroll (trackpad / shift+wheel)
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) > 0) {
+        e.preventDefault();
+        dragOffset -= e.deltaX * 0.6;
+        updateRotation();
+      }
+    };
+
+    // 3. Pointer drag & touch swipe (mouse + touch)
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging = true;
+      startX = e.clientX;
+      dragStartOffset = dragOffset;
+      stage.style.cursor = 'grabbing';
+      try {
+        stage.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      dragOffset = dragStartOffset + dx * 0.6;
+      updateRotation();
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      if (!isDragging) return;
+      isDragging = false;
+      stage.style.cursor = 'grab';
+      try {
+        stage.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    };
+
+    stage.addEventListener('wheel', onWheel, { passive: false });
+    stage.addEventListener('pointerdown', onPointerDown);
+    stage.addEventListener('pointermove', onPointerMove);
+    stage.addEventListener('pointerup', onPointerUp);
+    stage.addEventListener('pointercancel', onPointerUp);
+
     return () => {
-      tween.scrollTrigger?.kill();
-      tween.kill();
+      st.kill();
+      stage.removeEventListener('wheel', onWheel);
+      stage.removeEventListener('pointerdown', onPointerDown);
+      stage.removeEventListener('pointermove', onPointerMove);
+      stage.removeEventListener('pointerup', onPointerUp);
+      stage.removeEventListener('pointercancel', onPointerUp);
     };
   }, []);
 
