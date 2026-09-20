@@ -1,0 +1,34 @@
+/* ============================================================
+   SPIRAL SCROLL — centered helix strip
+   ============================================================ */
+
+.spiral-wrap {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 72px;
+  height: 100vh;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.spiral-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Tablet: reduce */
+@media (max-width: 900px) {
+  .spiral-wrap {
+    width: 52px;
+    opacity: 0.55;
+  }
+}
+
+/* Mobile: hide */
+@media (max-width: 480px) {
+  .spiral-wrap {
+    display: none;
+  }
+}

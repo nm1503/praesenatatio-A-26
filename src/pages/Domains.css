@@ -1,0 +1,213 @@
+/* ============================================================
+   DOMAINS PAGE STYLES
+   ============================================================ */
+
+/* ---- Page Header ---- */
+.page-header {
+  padding-top: clamp(120px, 16vw, 200px);
+  padding-bottom: 40px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ---- Domain Section ---- */
+.domain-section {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  grid-template-rows: auto;
+  gap: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  position: relative;
+  min-height: 480px;
+  overflow: hidden;
+}
+
+.domain-section--reverse {
+  grid-template-columns: 1fr 1.5fr 1fr;
+  direction: rtl;
+}
+
+.domain-section--reverse > * {
+  direction: ltr;
+}
+
+/* Color strip on hover */
+.domain-color-strip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--domain-color, var(--accent-gold));
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+
+.domain-section:hover .domain-color-strip {
+  transform: scaleY(1);
+}
+
+.domain-section--reverse .domain-color-strip {
+  left: auto;
+  right: 0;
+}
+
+/* Identity column */
+.domain-identity {
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: var(--bg-secondary);
+  position: relative;
+}
+
+.domain-index {
+  color: var(--domain-color, var(--accent-gold));
+  opacity: 0.7;
+}
+
+.domain-name {
+  font-size: clamp(48px, 6vw, 80px);
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  line-height: 0.9;
+  transition: color 0.3s;
+}
+
+.domain-section:hover .domain-name {
+  color: var(--domain-color, var(--accent-gold));
+}
+
+.domain-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.domain-keyword {
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.domain-section:hover .domain-keyword {
+  border-color: var(--domain-color, var(--accent-gold));
+  color: var(--domain-color, var(--accent-gold));
+  opacity: 0.7;
+}
+
+/* Body column */
+.domain-body {
+  padding: 60px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+  background: var(--bg-primary);
+}
+
+.domain-tagline {
+  font-size: clamp(24px, 3vw, 36px);
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.3;
+}
+
+.domain-desc {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  max-width: 520px;
+}
+
+/* Visual column */
+.domain-visual {
+  aspect-ratio: auto;
+  min-height: 360px;
+  background: var(--bg-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+/* Real image inside visual (when provided) */
+.domain-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s var(--ease-smooth);
+}
+
+.domain-section:hover .domain-visual img {
+  transform: scale(1.04);
+}
+
+.domain-visual-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.domain-visual-letter {
+  font-size: 120px;
+  line-height: 1;
+  color: var(--domain-color, var(--accent-gold));
+  opacity: 0.15;
+  transition: opacity 0.4s, transform 0.4s var(--ease-smooth);
+}
+
+.domain-section:hover .domain-visual-letter {
+  opacity: 0.25;
+  transform: scale(1.08);
+}
+
+.domain-visual-label {
+  color: var(--text-muted);
+}
+
+/* ---- Closing ---- */
+.domains-closing {
+  background: var(--bg-secondary);
+}
+
+.domains-closing-quote {
+  font-size: clamp(28px, 4vw, 56px);
+  font-weight: 300;
+  color: var(--text-primary);
+  line-height: 1.2;
+  max-width: 700px;
+}
+
+.domains-closing-quote em {
+  color: var(--accent-gold);
+  font-style: italic;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 1024px) {
+  .domain-section {
+    grid-template-columns: 1fr 1fr;
+  }
+  .domain-visual { display: none; }
+  .domain-section--reverse { direction: ltr; }
+}
+
+@media (max-width: 640px) {
+  .domain-section {
+    grid-template-columns: 1fr;
+  }
+  .domain-identity { padding: 40px 24px; }
+  .domain-body { padding: 40px 24px; }
+}

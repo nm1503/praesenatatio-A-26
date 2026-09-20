@@ -1,0 +1,174 @@
+/* ============================================================
+   FLAGSHIPS PAGE STYLES
+   ============================================================ */
+
+/* ---- Flagship Event Section ---- */
+.flagship-event {
+  padding: var(--section-gap) 0;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.flagship-event--alt {
+  background: var(--bg-secondary);
+}
+
+.flagship-event-inner {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 80px;
+  align-items: start;
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- Content ---- */
+.flagship-event-title {
+  font-size: clamp(48px, 7vw, 100px);
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  line-height: 0.9;
+  margin-bottom: 24px;
+  transition: color 0.3s;
+}
+
+.flagship-event:hover .flagship-event-title {
+  color: var(--event-color, var(--accent-gold));
+}
+
+.flagship-event-tagline {
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-style: italic;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+  line-height: 1.4;
+}
+
+.flagship-event-desc {
+  color: var(--text-secondary);
+  max-width: 540px;
+  margin-bottom: 40px;
+  line-height: 1.75;
+}
+
+/* Emphasis tags */
+.flagship-emphasis-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.flagship-emphasis-tag {
+  padding: 6px 14px;
+  border: 1px solid;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  transition: background 0.2s;
+}
+
+.flagship-emphasis-tag:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* ---- Timeline ---- */
+.flagship-event-timeline {
+  padding-top: 60px;
+}
+
+.timeline-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-entry {
+  display: grid;
+  grid-template-columns: 16px 1px 1fr;
+  gap: 0 16px;
+  min-height: 80px;
+}
+
+.timeline-node {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 0 12px currentColor;
+}
+
+.timeline-line {
+  width: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 14px auto 0;
+}
+
+.timeline-entry:last-child .timeline-line {
+  display: none;
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 32px;
+}
+
+.timeline-year {
+  font-size: 28px;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
+
+.timeline-label {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* Version badge */
+.flagship-version-badge {
+  margin-top: 32px;
+  padding: 20px 24px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.flagship-version-name {
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+/* ---- Giant bg title ---- */
+.flagship-event-bg-title {
+  position: absolute;
+  bottom: -40px;
+  right: -20px;
+  font-size: clamp(120px, 18vw, 240px);
+  color: rgba(255, 255, 255, 0.02);
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 0.04em;
+  z-index: 1;
+  transition: color 0.4s;
+}
+
+.flagship-event:hover .flagship-event-bg-title {
+  color: rgba(255, 255, 255, 0.035);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+  .flagship-event-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .flagship-event-timeline {
+    padding-top: 0;
+  }
+}
