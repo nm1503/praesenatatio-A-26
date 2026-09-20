@@ -6,7 +6,7 @@ const NAV_LINKS = [
   { to: '/', label: 'Home' },
   { to: '/domains', label: 'Domains' },
   { to: '/flagships', label: 'Flagships' },
-  { to: '/domain-activity', label: 'Domain Activity' },
+  { to: '/domain-activity', label: 'Domain Events' },
   { to: '/gallery', label: 'Gallery' },
 ];
 
@@ -78,6 +78,21 @@ export default function Navbar() {
           <span />
           <span />
         </button>
+
+        {/* Aaruush Logo — top right */}
+        <a
+          href="https://www.aaruush.org"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="navbar-aaruush-logo"
+          aria-label="Aaruush website"
+        >
+          <img
+            src="/images/aaruush-logo.png"
+            alt="Aaruush logo"
+            className="navbar-aaruush-img"
+          />
+        </a>
       </nav>
 
       {/* Mobile full-screen overlay menu */}

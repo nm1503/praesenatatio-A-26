@@ -24,7 +24,10 @@ export const flagshipEvents: FlagshipEvent[] = [
       'NX-Gen Forum is a modern UN-inspired simulation that challenges participants to think beyond conventional diplomacy and develop innovative ideas and solutions for emergency scenarios in the digital age. It is not about following procedure — it is about rewriting it.',
     introduced: "Aaruush'25",
     emphasis: ['Innovation', 'Diplomacy', 'Strategy', 'Emergency Response', 'Ideas'],
-    timeline: [{ year: '2025', label: "Introduced at Aaruush'25" }],
+    timeline: [
+      { year: '2025', label: "Introduced at Aaruush'25" },
+      { year: '2026', label: "NX-Gen Forum — Aaruush'26" },
+    ],
     accentColor: '#1a5fa8',
     type: 'flagship',
   },
@@ -35,11 +38,12 @@ export const flagshipEvents: FlagshipEvent[] = [
     description:
       'Spotlight is a multi-round creative platform designed to explore storytelling, scripts, acting and creativity while challenging participants across different stages of the competition. Each round peels back a new layer — of craft, of character, of courage.',
     introduced: '2024',
-    version: 'Spotlight 2.0 — Aaruush\'25',
+    version: "Spotlight 2.0 — Aaruush'26",
     emphasis: ['Storytelling', 'Scripts', 'Acting', 'Creativity', 'Performance'],
     timeline: [
       { year: '2024', label: 'Spotlight — First Edition' },
       { year: '2025', label: "Spotlight 2.0 — Aaruush'25" },
+      { year: '2026', label: "Spotlight 2.0 — Aaruush'26" },
     ],
     accentColor: '#c9a84c',
     type: 'flagship',

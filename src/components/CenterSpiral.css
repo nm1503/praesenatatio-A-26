@@ -13,11 +13,11 @@
   width: 80px;
   height: 100%;
 
-  /* Sit BEHIND the 3D drum panels — z-index 0 keeps it below
-     front-facing cards while still visible through the gap */
-  z-index: 0;
+  /* Always-visible central axis pole — cards revolve around it.
+     z-index 10 keeps it on top in 2D stacking so it's never hidden. */
+  z-index: 10;
 
-  /* Clip strictly to the column so it never bleeds onto cards */
+  /* Clip strictly to the 80px column so it never bleeds beyond its strip */
   overflow: hidden;
 
   pointer-events: none;

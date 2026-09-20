@@ -275,13 +275,11 @@
 }
 
 /* The drum — GSAP rotates this element around Y */
-/* z-index: 1 ensures drum panels paint above the z-index:0 spiral canvas */
 .core-areas-drum {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   position: relative;
-  z-index: 1;
 }
 
 /* Each panel is absolutely centered in the stage and pushed outward */

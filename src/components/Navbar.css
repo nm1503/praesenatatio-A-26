@@ -6,7 +6,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 72px; /* leave room for spiral */
+  right: 0;
   z-index: 500;
   display: flex;
   align-items: center;
@@ -259,4 +259,30 @@
   .navbar-hamburger {
     display: flex;
   }
+}
+
+/* ============================================================
+   AARUUSH LOGO — top-right corner, visible on all pages
+   ============================================================ */
+
+.navbar-aaruush-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px;
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: opacity 0.25s, transform 0.25s var(--ease-smooth);
+}
+
+.navbar-aaruush-logo:hover {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+.navbar-aaruush-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
 }
