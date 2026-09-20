@@ -358,7 +358,6 @@ export default function Home() {
                   transform: `rotateY(${idx * 120}deg) translateZ(var(--drum-radius))`,
                 } as React.CSSProperties}
               >
-                <span className="core-area-num font-hero">{area.label}</span>
                 <div className="core-area-content">
                   <h3 className="core-area-name font-hero">{area.name}</h3>
                   <p className="core-area-tagline font-display">{area.tagline}</p>
