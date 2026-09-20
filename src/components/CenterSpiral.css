@@ -3,22 +3,16 @@
    ============================================================ */
 
 .center-spiral {
-  /* Sit at the exact center of .core-areas-stage */
+  /* Sit at the exact 3D center (Z = 0) inside .core-areas-drum */
   position: absolute;
   left: 50%;
   top: 0;
-  transform: translateX(-50%);
+  transform: translate3d(-50%, 0, 0);
+  transform-style: preserve-3d;
 
-  /* Narrow enough to sit between the cards, tall as the stage */
-  width: 80px;
+  /* Width for the central axis pole */
+  width: 100px;
   height: 100%;
-
-  /* Always-visible central axis pole — cards revolve around it.
-     z-index 10 keeps it on top in 2D stacking so it's never hidden. */
-  z-index: 10;
-
-  /* Clip strictly to the 80px column so it never bleeds beyond its strip */
-  overflow: hidden;
 
   pointer-events: none;
 }

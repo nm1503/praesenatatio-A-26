@@ -270,8 +270,6 @@
   perspective-origin: center center;
   position: relative;
   margin-top: 40px;
-  /* Isolate stacking context so internal z-indexes work correctly */
-  isolation: isolate;
 }
 
 /* The drum — GSAP rotates this element around Y */

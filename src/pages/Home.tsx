@@ -207,6 +207,9 @@ export default function Home() {
         <div className="core-areas-stage">
           {/* The drum — GSAP rotates this around Y axis */}
           <div className="core-areas-drum" ref={drumRef}>
+            {/* Center spiral — 3D central axis pole at Z=0 inside drum */}
+            <CenterSpiral sectionRef={coreRef} />
+
             {coreAreas.map((area, idx) => (
               <article
                 key={area.id}
@@ -230,9 +233,6 @@ export default function Home() {
               </article>
             ))}
           </div>
-
-          {/* Center spiral — the axis pole the panels revolve around */}
-          <CenterSpiral sectionRef={coreRef} />
         </div>
 
         <div className="container" style={{ marginTop: 48 }}>
